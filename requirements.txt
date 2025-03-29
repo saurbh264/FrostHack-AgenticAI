@@ -11,3 +11,6 @@ numpy
 speechrecognition
 pydub
 opencv-python
+langchain_google_genai
+dotenv
+langchain_core
