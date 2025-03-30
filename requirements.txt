@@ -14,3 +14,7 @@ opencv-python
 langchain_google_genai
 dotenv
 langchain_core
+<<<<<<< HEAD
+=======
+streamlit_lottie
+>>>>>>> d4de87acaa9cfc254098422ec11b30575727937a
