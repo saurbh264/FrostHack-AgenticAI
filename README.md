@@ -8,71 +8,86 @@ We’re creating agents that can:
 - **Deploy on platforms**: Make your agent work on Telegram, Discord, or Twitter.
 - **Process natural language**: Use large language models (LLMs) to understand and generate human language.
 - **Generate images**: Use AI models to create high-quality images.
-- **Handle voice**: Add speech-to-text and text-to-speech capabilities.
 
 ### The Only Rule:
 You *must* use the **Heurist Agent Framework** to build everything. Other than that, it’s up to you how you choose to approach the problem. 
 
+## Project Structure
+
+- `agents/`: Contains the implementation of various autonomous agents.
+- `bots/`: Includes bot-specific code for different platforms.
+- `clients/`: Houses client-side applications and interfaces.
+- `config/`: Configuration files for setting up the environment and parameters.
+- `core/`: Core functionalities and utilities shared across the project.
+- `interfaces/`: Defines interfaces for interaction between different modules.
+- `media/`: Assets and media files used within the project.
+- `video_generator/`: Module dedicated to generating videos using AI models.
+- `.envexample`: Example environment configuration file.
+- `.gitignore`: Specifies files and directories to be ignored by Git.
+- `README.md`: This documentation file.
+- `embeddings.db`: Database file containing embeddings for various models.
+- `main_app.py`: Main application script to run the project.
+- `main_script.py`: Primary script executing core functionalities.
+- `main_telegram.py`: Telegram-specific main script for deploying the agent.
+- `requirements.txt`: Lists the dependencies required for the project.
+
 ## Getting Started
 
-Here’s how to get up and running:
+To set up the project locally:
 
-1. **Clone the repo**:
+1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-org/frosthack-2025.git
-   cd frosthack-2025
+   git clone https://github.com/saurbh264/FrostHack-AgenticAI.git
    ```
-
-2. **Set up a virtual environment**:
+2. **Navigate to the Project Directory**:
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # Windows: venv\Scripts\activate
+   cd FrostHack-AgenticAI
    ```
-
-3. **Install dependencies**:
+3. **Install Dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
-
-4. **Set up Heurist.ai**:
-   Follow the Heurist setup guide here: [Heurist Setup](https://heurist.ai/setup).
-
-## File Structure
-
-Here’s a quick look at the basic file structure to help you navigate:
-
-```
-frosthack-2025/
-├── agent/                # Your autonomous agent code and logic
-│   ├── agent.py          # Main agent logic
-│   ├── nlp.py            # Natural language processing functions
-│   ├── image_gen.py      # Image generation logic
-│   ├── voice.py          # Voice interaction functions
-├── requirements.txt      # List of dependencies for the project
-├── run_simulation.py     # Script to run the agent in the simulation
-├── heurist_config.yaml   # Configuration for Heurist.ai setup
-├── README.md             # Project documentation
-└── .gitignore            # Git ignore settings
-```
-
-### Key Files:
-- **`agent/`**: This is where you’ll write your agent’s logic and functionalities for NLP, image generation, voice interactions, etc.
-- **`run_simulation.py`**: The script to test your agent in a simulation environment.
-- **`requirements.txt`**: Contains all the dependencies your project needs.
-
-## Running the Agent
-
-Once everything is set up, you can test your agent by running:
-
-```bash
-python run_simulation.py
-```
-
-This will launch the environment and start your agent.
+4. **Configure Environment Variables**:
+   - Rename `.envexample` to `.env`.
+   - Update the `.env` file with appropriate configuration values.
+5. **Run the Application**:
+   ```bash
+   python main_app.py
+   ```
+6. **(Optional) Google Colab**
+   If you're facing issue in seting up locally, you can setup it on Google Colab using:
+   ```bash
+      !git clone https://github.com/saurbh264/FrostHack-AgenticAI.git
+      %cd FrostHack-AgenticAI/
+      !pip install -r requirements.txt
+      !python main_script.py
+   ```
 
 
-## Need Help?
+## Acknowledgments
 
-Hit me up if you have questions or run into any problems. Let's make this awesome!
+We extend our gratitude to the organizers of FrostHack 2025 and the developers of the Heurist Agent Framework for their support and tools that made this project possible.
+Repo Link Mainly Used For Integrating HeuristAI - https://github.com/heurist-network/heurist-agent-framework.git
+
+## Contributing
+
+We welcome contributions from the community. To contribute:
+
+1. Fork the repository.
+2. Create a new branch:
+   ```bash
+   git checkout -b feature-branch
+   ```
+3. Make your changes and commit them:
+   ```bash
+   git commit -m "Description of changes"
+   ```
+4. Push to the branch:
+   ```bash
+   git push origin feature-branch
+   ```
+5. Open a pull request detailing your changes.
+
+## HAPPY HACKING !!
 
 ---
