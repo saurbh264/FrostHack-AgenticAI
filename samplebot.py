@@ -8,7 +8,7 @@ from datetime import datetime
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from video_generator.video_maker import create_travel_video
 
-TOKEN: Final = '8142158412:AAEVhy1H_X2ZxT2wEqun_OxqD7SKWqnFqPo'
+TOKEN: Final = os.getenv("TELEGRAM_API_TOKEN","8142158412:AAEVhy1H_X2ZxT2wEqun_OxqD7SKWqnFqPo")
 BOT_USERNAME: Final = 'wanderwbot'
 
 # Directories
