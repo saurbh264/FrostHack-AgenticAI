@@ -28,8 +28,8 @@ warnings.filterwarnings("ignore")
 # Constants
 MAX_HISTORY_LENGTH = 5
 MAX_RESPONSE_LENGTH = 4000
-TELEGRAM_API_TOKEN = os.getenv("TELEGRAM_API_TOKEN","8142158412:AAEVhy1H_X2ZxT2wEqun_OxqD7SKWqnFqPo")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY","AIzaSyBFH-nK4_QMO12KQunkwo79RSNLVnBjTQM")
+TELEGRAM_API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not TELEGRAM_API_TOKEN or not GEMINI_API_KEY:
     raise ValueError("Missing TELEGRAM_API_TOKEN or GEMINI_API_KEY in environment variables.")
