@@ -3,10 +3,10 @@ import logging
 import time
 import telebot
 from telebot.types import Message
-from langchain import HuggingFaceHub, PromptTemplate, LLMChain
-import warnings
 from dotenv import load_dotenv
+import warnings
 import signal
+import google.generativeai as genai
 
 # Load environment variables
 load_dotenv()
@@ -27,12 +27,12 @@ warnings.filterwarnings("ignore")
 
 # Constants
 MAX_HISTORY_LENGTH = 5
+MAX_RESPONSE_LENGTH = 4000
 TELEGRAM_API_TOKEN = os.getenv("TELEGRAM_API_TOKEN","8142158412:AAEVhy1H_X2ZxT2wEqun_OxqD7SKWqnFqPo")
-HF_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN","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")
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = HF_API_TOKEN
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY","AIzaSyBFH-nK4_QMO12KQunkwo79RSNLVnBjTQM")
 
-if not TELEGRAM_API_TOKEN:
-    raise ValueError("TELEGRAM_API_TOKEN is not set in environment variables.")
+if not TELEGRAM_API_TOKEN or not GEMINI_API_KEY:
+    raise ValueError("Missing TELEGRAM_API_TOKEN or GEMINI_API_KEY in environment variables.")
 
 # Graceful shutdown
 def shutdown_handler(signum, frame):
@@ -45,28 +45,16 @@ class AITelegramBot:
     def __init__(self):
         self.bot = telebot.TeleBot(TELEGRAM_API_TOKEN)
         self.user_chat_histories = {}
-        self.setup_llm()
+        self.setup_gemini()
         self.setup_handlers()
-    
-    def setup_llm(self):
-        """Initialize the LLM and LLMChain"""
+
+    def setup_gemini(self):
         try:
-            self.llm = HuggingFaceHub(
-                repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1",
-                model_kwargs={"temperature": 0.55, "max_length": 512}
-            )
-            self.prompt = PromptTemplate(
-                input_variables=["chat_history", "question"],
-                template="""
-                Previous conversation:
-                {chat_history}
-                Human: {question}
-                AI Assistant:"""
-            )
-            self.llm_chain = LLMChain(llm=self.llm, prompt=self.prompt)
-            logger.info("LLM initialized successfully")
+            genai.configure(api_key=GEMINI_API_KEY)
+            self.model = genai.GenerativeModel("gemini-1.5-pro")
+            logger.info("Gemini model initialized successfully")
         except Exception as e:
-            logger.error(f"Error initializing LLM: {str(e)}")
+            logger.error(f"Error initializing Gemini model: {e}")
             raise
 
     def setup_handlers(self):
@@ -99,12 +87,28 @@ class AITelegramBot:
     def handle_help(self, message: Message):
         self.bot.reply_to(message, "I am an AI assistant. Use /start to begin, /clear to reset our conversation, or just ask me anything.")
 
-    def get_llm_response(self, chat_history_str: str, question: str) -> str:
+    def get_gemini_response(self, chat_history_str: str, question: str) -> str:
         try:
-            return self.llm_chain.run(chat_history=chat_history_str, question=question)
+            prompt = f"""
+            Don't do any formatting, use plain text with bullet points instead.
+            Previous conversation:
+            {chat_history_str}
+            Human: {question}
+            AI Assistant:"""
+            response = self.model.generate_content(prompt)
+            if not response or not response.text:
+                return "Sorry, I couldn't generate a response."
+            return response.text.strip()
         except Exception as e:
-            logger.error(f"Error during LLM call: {str(e)}")
+            logger.error(f"Error during Gemini call: {e}")
             return "I'm experiencing technical issues. Please try again later."
+
+    def send_message_safely(self, user_id, response):
+        if len(response) > MAX_RESPONSE_LENGTH:
+            for i in range(0, len(response), MAX_RESPONSE_LENGTH):
+                self.bot.send_message(user_id, response[i:i+MAX_RESPONSE_LENGTH])
+        else:
+            self.bot.send_message(user_id, response)
 
     def handle_message(self, message: Message):
         user_id = message.from_user.id
@@ -112,36 +116,29 @@ class AITelegramBot:
         if user_id not in self.user_chat_histories:
             self.user_chat_histories[user_id] = []
 
-        # chat_history_str = "\n".join([f"Human: {q}\nAI: {a}" for q, a in self.user_chat_histories[user_id]])
-        # response = self.get_llm_response(chat_history_str, user_question)
-        
-        # Format chat history for internal use only (no display to the user)
-        chat_history_str = "\n".join([f"{q}\n{a}" for q, a in self.user_chat_histories[user_id]])
+        chat_history_str = "\n".join([f"Human: {q}\nAI: {a}" for q, a in self.user_chat_histories[user_id]])
 
-        # Get response from LLM
-        response = self.get_llm_response(chat_history_str, user_question)
+        response = self.get_gemini_response(chat_history_str, user_question)
 
-        # Send only the latest response to the user
-        self.bot.send_message(user_id, response)
+        self.send_message_safely(user_id, response)
 
-        # Update chat history
         self.user_chat_histories[user_id].append((user_question, response))
 
-        # Maintain max history length
         if len(self.user_chat_histories[user_id]) > MAX_HISTORY_LENGTH:
             self.user_chat_histories[user_id] = self.user_chat_histories[user_id][-MAX_HISTORY_LENGTH:]
         
-        self.bot.reply_to(message, response)
         logger.info(f"Responded to user {user_id}")
 
     def run(self):
         logger.info("Bot is starting...")
-        try:
-            self.bot.polling(none_stop=True, timeout=60)
-        except Exception as e:
-            logger.error(f"Error during polling: {str(e)}")
-            time.sleep(10)
+        while True:
+            try:
+                self.bot.polling(none_stop=True, timeout=60)
+            except Exception as e:
+                logger.error(f"Error during polling: {e}")
+                time.sleep(10)
 
 if __name__ == "__main__":
     bot = AITelegramBot()
     bot.run()
+
