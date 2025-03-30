@@ -31,6 +31,11 @@ You *must* use the **Heurist Agent Framework** to build everything. Other than t
 - `main_telegram.py`: Telegram-specific main script for deploying the agent.
 - `requirements.txt`: Lists the dependencies required for the project.
 
+### 📽 **Demo Video**  
+Experience WanderWise in action! Watch our demo to see how it makes travel planning smarter and easier:  
+
+[Watch the Demo Here](https://youtu.be/xinmGBPTWmU)  
+
 ## Getting Started
 
 To set up the project locally:
